@@ -33,42 +33,42 @@ const BASE_ANNUAL_COSTS_BY_AGE = {
   '0-1': {
     basicLiving: 18000,     // 婴儿期生活费较高（奶粉、尿布等）
     education: 0,           // 无正式教育费用
-    healthcare: 4000,       // 疫苗、体检费用较高
+    healthcare: 1500,       // 疫苗免费，主要是体检和小病治疗
     extracurricular: 0,     // 无课外活动
     others: 3000,           // 婴儿用品等
   },
   '2-3': {
     basicLiving: 16000,     // 生活费略降
     education: 2000,        // 早教、启蒙教育
-    healthcare: 3500,       // 医疗费用
+    healthcare: 1800,       // 医疗费用，主要是感冒发烧等常见病
     extracurricular: 1000,  // 简单的亲子活动
     others: 3500,           // 玩具、图书等
   },
   '4-6': {
     basicLiving: 15000,     // 学前期生活费
     education: 6000,        // 幼儿园费用
-    healthcare: 3000,       // 常规医疗
+    healthcare: 1500,       // 常规医疗，身体较为健康
     extracurricular: 3000,  // 兴趣启蒙
     others: 4000,           // 学习用品等
   },
   '7-12': {
     basicLiving: 16000,     // 小学期生活费
     education: 8000,        // 小学教育费用
-    healthcare: 2500,       // 医疗费用降低
+    healthcare: 1200,       // 医疗费用最低，身体健康期
     extracurricular: 5000,  // 课外培训增加
     others: 4500,           // 学习用品、文具等
   },
   '13-15': {
     basicLiving: 18000,     // 青春期生活费增加
     education: 12000,       // 初中教育费用
-    healthcare: 2500,       // 医疗费用
+    healthcare: 1500,       // 青春期可能有一些健康问题
     extracurricular: 8000,  // 补习班、兴趣班
     others: 5000,           // 电子产品、服装等
   },
   '16-18': {
     basicLiving: 20000,     // 高中期生活费最高
     education: 15000,       // 高中教育费用
-    healthcare: 2500,       // 医疗费用
+    healthcare: 1500,       // 医疗费用
     extracurricular: 12000, // 高考补习、特长培训
     others: 6000,           // 各种费用增加
   },
@@ -177,17 +177,24 @@ function generateRecommendations(data: CalculatorFormData, breakdown: CostBreakd
   // 基于年龄的建议
   const ageGroup = getAgeGroup(data.childAge)
   if (ageGroup === '0-1') {
-    recommendations.push('婴儿期重点关注营养和健康，奶粉、尿布、疫苗是主要支出。建议选择品质可靠的婴儿用品，不必过度追求高端品牌。')
+    recommendations.push('婴儿期重点关注营养和健康，奶粉、尿布是主要支出。国家免疫疫苗免费，自费疫苗可根据经济情况选择。建议选择品质可靠的婴儿用品，不必过度追求高端品牌。')
   } else if (ageGroup === '2-3') {
-    recommendations.push('幼儿期开始有简单的早教需求，可以选择一些启蒙读物和益智玩具。医疗费用相对较高，建议做好预防保健。')
+    recommendations.push('幼儿期开始有简单的早教需求，可以选择一些启蒙读物和益智玩具。医疗费用主要是感冒发烧等常见病，有医保报销大部分费用。')
   } else if (ageGroup === '4-6') {
-    recommendations.push('学前期需要考虑幼儿园费用，这是教育支出的开始。建议选择性价比合适的幼儿园，重点关注教育质量而非设施豪华程度。')
+    recommendations.push('学前期需要考虑幼儿园费用，这是教育支出的开始。建议选择性价比合适的幼儿园，重点关注教育质量。医疗费用较低，主要做好预防保健。')
   } else if (ageGroup === '7-12') {
-    recommendations.push('小学期间教育费用相对稳定，课外培训开始增加。建议根据孩子兴趣选择1-2项特长培养，避免过度报班。')
+    recommendations.push('小学期间教育费用相对稳定，课外培训开始增加。这个年龄段身体健康，医疗费用最低。建议根据孩子兴趣选择1-2项特长培养，避免过度报班。')
   } else if (ageGroup === '13-15') {
-    recommendations.push('初中期间学习任务加重，补习费用可能大幅增加。建议合理规划教育投入，关注孩子的学习效率和身心健康。')
+    recommendations.push('初中期间学习任务加重，补习费用可能大幅增加。青春期可能有一些健康问题需要关注。建议合理规划教育投入，关注孩子的学习效率和身心健康。')
   } else {
-    recommendations.push('高中期间面临升学压力，教育投入达到峰值。建议重点投入有效的学习资源，同时为大学费用做好储备。')
+    recommendations.push('高中期间面临升学压力，教育投入达到峰值。医疗费用相对稳定，主要关注心理健康。建议重点投入有效的学习资源，同时为大学费用做好储备。')
+  }
+
+  // 医疗费用相关建议
+  if (data.healthcareLevel === 'premium') {
+    recommendations.push('选择高端医疗服务可以获得更好的就医体验，但基础医疗已能满足大部分需求。建议根据家庭经济状况合理选择。')
+  } else {
+    recommendations.push('基础医疗配合国家医保政策已能很好地保障孩子健康，重点做好预防保健和健康生活习惯培养。')
   }
 
   return recommendations

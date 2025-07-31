@@ -94,41 +94,45 @@ export default function CalculatorPage() {
                   <div className="space-y-3 text-sm text-muted-foreground">
                     <div className="flex items-start space-x-2">
                       <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
-                      <p>计算结果基于当前市场价格和统计数据</p>
+                      <p>计算结果基于中国实际国情和统计数据</p>
                     </div>
                     <div className="flex items-start space-x-2">
                       <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
-                      <p>包含教育、医疗、生活等主要费用类别</p>
+                      <p>医疗费用已考虑医保报销和免费疫苗政策</p>
                     </div>
                     <div className="flex items-start space-x-2">
                       <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
-                      <p>结果仅供参考，实际费用可能因个人情况而异</p>
+                      <p>教育费用根据年龄段实际需求计算</p>
+                    </div>
+                    <div className="flex items-start space-x-2">
+                      <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
+                      <p>结果仅供参考，实际费用因地区和个人情况而异</p>
                     </div>
                   </div>
                 </Card>
 
                 <Card className="p-6">
-                  <h3 className="text-lg font-semibold mb-4">费用构成</h3>
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-muted-foreground">基础生活费</span>
-                      <span className="text-sm font-medium">30-40%</span>
+                  <h3 className="text-lg font-semibold mb-4">年龄段特点</h3>
+                  <div className="space-y-4 text-sm">
+                    <div className="border-l-4 border-blue-500 pl-3">
+                      <div className="font-medium text-blue-700">0-1岁 (婴儿期)</div>
+                      <div className="text-muted-foreground">奶粉、尿布是主要支出，国家疫苗免费，无教育费用</div>
                     </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-muted-foreground">教育费用</span>
-                      <span className="text-sm font-medium">25-35%</span>
+                    <div className="border-l-4 border-green-500 pl-3">
+                      <div className="font-medium text-green-700">2-3岁 (幼儿期)</div>
+                      <div className="text-muted-foreground">开始有早教需求，医疗费用主要是感冒发烧等</div>
                     </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-muted-foreground">医疗保健</span>
-                      <span className="text-sm font-medium">10-15%</span>
+                    <div className="border-l-4 border-yellow-500 pl-3">
+                      <div className="font-medium text-yellow-700">4-6岁 (学前期)</div>
+                      <div className="text-muted-foreground">幼儿园费用开始，兴趣启蒙增加</div>
                     </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-muted-foreground">课外活动</span>
-                      <span className="text-sm font-medium">10-20%</span>
+                    <div className="border-l-4 border-purple-500 pl-3">
+                      <div className="font-medium text-purple-700">7-12岁 (小学期)</div>
+                      <div className="text-muted-foreground">教育费用稳定，课外培训逐渐增加</div>
                     </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-muted-foreground">其他费用</span>
-                      <span className="text-sm font-medium">5-10%</span>
+                    <div className="border-l-4 border-red-500 pl-3">
+                      <div className="font-medium text-red-700">13-18岁 (中学期)</div>
+                      <div className="text-muted-foreground">教育投入达到峰值，补习费用大幅增加</div>
                     </div>
                   </div>
                 </Card>

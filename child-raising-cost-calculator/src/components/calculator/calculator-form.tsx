@@ -165,7 +165,7 @@ export function CalculatorForm({ onSubmit, loading = false }: CalculatorFormProp
                   </label>
                   <input
                     type="number"
-                    {...register('childAge', { 
+                    {...register('childAge', {
                       required: '请输入孩子年龄',
                       min: { value: 0, message: '年龄不能小于0岁' },
                       max: { value: 18, message: '年龄不能大于18岁' }
@@ -175,6 +175,18 @@ export function CalculatorForm({ onSubmit, loading = false }: CalculatorFormProp
                   />
                   {errors.childAge && (
                     <p className="text-sm text-destructive mt-1">{errors.childAge.message}</p>
+                  )}
+                  {watchedValues.childAge !== undefined && (
+                    <div className="mt-2 p-2 bg-blue-50 rounded-md">
+                      <p className="text-xs text-blue-700">
+                        {watchedValues.childAge <= 1 && '💼 婴儿期：主要费用为奶粉、尿布等，国家疫苗免费'}
+                        {watchedValues.childAge > 1 && watchedValues.childAge <= 3 && '🎨 幼儿期：开始有早教需求，医疗费用较低'}
+                        {watchedValues.childAge > 3 && watchedValues.childAge <= 6 && '🏫 学前期：幼儿园费用是主要支出，身体较健康'}
+                        {watchedValues.childAge > 6 && watchedValues.childAge <= 12 && '📚 小学期：教育费用稳定，医疗费用最低'}
+                        {watchedValues.childAge > 12 && watchedValues.childAge <= 15 && '📖 初中期：补习费用增加，注意青春期健康'}
+                        {watchedValues.childAge > 15 && '🎓 高中期：教育投入峰值，关注心理健康'}
+                      </p>
+                    </div>
                   )}
                 </div>
               </CardContent>

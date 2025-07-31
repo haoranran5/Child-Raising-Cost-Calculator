@@ -22,42 +22,86 @@ interface ResultDisplayProps {
 
 export function ResultDisplay({ result }: ResultDisplayProps) {
   const percentages = getCostPercentages(result.breakdown)
-  
+
+  // 根据孩子年龄生成更贴合实际的费用说明
+  const getAgeSpecificDescription = (category: string, age: number) => {
+    switch (category) {
+      case 'basicLiving':
+        if (age <= 1) return '奶粉、尿布、婴儿用品、食物等'
+        if (age <= 3) return '食物、服装、日用品、玩具等'
+        if (age <= 6) return '食物、服装、日用品、学习用品等'
+        if (age <= 12) return '食物、服装、日用品、学习用品等'
+        return '食物、服装、日用品、电子产品等'
+
+      case 'education':
+        if (age <= 1) return '无正式教育费用'
+        if (age <= 3) return '早教、启蒙读物、益智玩具等'
+        if (age <= 6) return '幼儿园费用、学前教育等'
+        if (age <= 12) return '小学学费、教材、文具等'
+        if (age <= 15) return '初中学费、教材、参考书等'
+        return '高中学费、教材、复习资料等'
+
+      case 'healthcare':
+        if (age <= 1) return '体检、自费疫苗、感冒发烧等（国家免疫疫苗免费）'
+        if (age <= 3) return '体检、感冒发烧、意外伤害等常见疾病'
+        if (age <= 12) return '体检、感冒发烧、意外伤害等（医保报销大部分）'
+        return '体检、常见疾病治疗等（医保报销大部分）'
+
+      case 'extracurricular':
+        if (age <= 1) return '基本无课外活动费用'
+        if (age <= 3) return '亲子活动、简单游戏等'
+        if (age <= 6) return '兴趣启蒙、艺术活动等'
+        if (age <= 12) return '兴趣班、体育活动、艺术培训等'
+        if (age <= 15) return '补习班、特长培训、竞赛等'
+        return '高考补习、特长培训、竞赛等'
+
+      case 'others':
+        if (age <= 1) return '婴儿车、安全座椅等大件用品'
+        if (age <= 3) return '玩具、图书、外出费用等'
+        if (age <= 6) return '玩具、图书、外出娱乐等'
+        if (age <= 12) return '文具、图书、娱乐、交通等'
+        return '电子产品、娱乐、交通、零花钱等'
+
+      default:
+        return '其他相关费用'
+    }
+  }
+
   const costItems = [
     {
       label: '基础生活费',
       amount: result.breakdown.basicLiving,
       percentage: percentages.basicLiving,
       color: 'bg-blue-500',
-      description: '日常生活必需品、食物、服装等'
+      description: getAgeSpecificDescription('basicLiving', result.userInput.childAge)
     },
     {
       label: '教育费用',
       amount: result.breakdown.education,
       percentage: percentages.education,
       color: 'bg-green-500',
-      description: '学费、教材、学习用品等'
+      description: getAgeSpecificDescription('education', result.userInput.childAge)
     },
     {
       label: '医疗费用',
       amount: result.breakdown.healthcare,
       percentage: percentages.healthcare,
       color: 'bg-red-500',
-      description: '医疗保险、体检、治疗费用等'
+      description: getAgeSpecificDescription('healthcare', result.userInput.childAge)
     },
     {
       label: '课外活动',
       amount: result.breakdown.extracurricular,
       percentage: percentages.extracurricular,
       color: 'bg-purple-500',
-      description: '兴趣班、培训班、体育活动等'
+      description: getAgeSpecificDescription('extracurricular', result.userInput.childAge)
     },
     {
       label: '其他费用',
       amount: result.breakdown.others,
       percentage: percentages.others,
       color: 'bg-orange-500',
-      description: '交通、娱乐、意外支出等'
+      description: getAgeSpecificDescription('others', result.userInput.childAge)
     },
   ]
 
