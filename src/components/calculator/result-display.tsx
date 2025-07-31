@@ -83,11 +83,18 @@ export function ResultDisplay({ result }: ResultDisplayProps) {
       description: getAgeSpecificDescription('education', result.userInput.childAge)
     },
     {
-      label: '医疗费用',
+      label: '基础医疗费用',
       amount: result.breakdown.healthcare,
       percentage: percentages.healthcare,
       color: 'bg-red-500',
       description: getAgeSpecificDescription('healthcare', result.userInput.childAge)
+    },
+    {
+      label: '疫苗费用',
+      amount: result.breakdown.vaccineCosts.total,
+      percentage: (result.breakdown.vaccineCosts.total / (result.totalAnnualCost - result.breakdown.vaccineCosts.total + result.breakdown.vaccineCosts.total)) * 100,
+      color: 'bg-pink-500',
+      description: `自费疫苗费用（国家免疫疫苗免费）`
     },
     {
       label: '课外活动',

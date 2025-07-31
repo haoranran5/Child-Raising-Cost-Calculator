@@ -1,4 +1,5 @@
 import { CalculatorFormData, CalculationResult, CostBreakdown } from '@/types'
+import { calculateVaccineCosts, getVaccineRecommendations } from '@/data/vaccineCosts'
 
 /**
  * 城市等级费用系数
@@ -33,42 +34,42 @@ const BASE_ANNUAL_COSTS_BY_AGE = {
   '0-1': {
     basicLiving: 18000,     // 婴儿期生活费较高（奶粉、尿布等）
     education: 0,           // 无正式教育费用
-    healthcare: 1500,       // 疫苗免费，主要是体检和小病治疗
+    healthcare: 800,        // 基础医疗费用（体检、常见病治疗），疫苗费用单独计算
     extracurricular: 0,     // 无课外活动
     others: 3000,           // 婴儿用品等
   },
   '2-3': {
     basicLiving: 16000,     // 生活费略降
     education: 2000,        // 早教、启蒙教育
-    healthcare: 1800,       // 医疗费用，主要是感冒发烧等常见病
+    healthcare: 600,        // 基础医疗费用（体检、常见病治疗），疫苗费用单独计算
     extracurricular: 1000,  // 简单的亲子活动
     others: 3500,           // 玩具、图书等
   },
   '4-6': {
     basicLiving: 15000,     // 学前期生活费
     education: 6000,        // 幼儿园费用
-    healthcare: 1500,       // 常规医疗，身体较为健康
+    healthcare: 500,        // 基础医疗费用（体检、常见病治疗），疫苗费用单独计算
     extracurricular: 3000,  // 兴趣启蒙
     others: 4000,           // 学习用品等
   },
   '7-12': {
     basicLiving: 16000,     // 小学期生活费
     education: 8000,        // 小学教育费用
-    healthcare: 1200,       // 医疗费用最低，身体健康期
+    healthcare: 400,        // 基础医疗费用（体检、常见病治疗），疫苗费用单独计算
     extracurricular: 5000,  // 课外培训增加
     others: 4500,           // 学习用品、文具等
   },
   '13-15': {
     basicLiving: 18000,     // 青春期生活费增加
     education: 12000,       // 初中教育费用
-    healthcare: 1500,       // 青春期可能有一些健康问题
+    healthcare: 600,        // 基础医疗费用（体检、常见病治疗），疫苗费用单独计算
     extracurricular: 8000,  // 补习班、兴趣班
     others: 5000,           // 电子产品、服装等
   },
   '16-18': {
     basicLiving: 20000,     // 高中期生活费最高
     education: 15000,       // 高中教育费用
-    healthcare: 1500,       // 医疗费用
+    healthcare: 500,        // 基础医疗费用（体检、常见病治疗），疫苗费用单独计算
     extracurricular: 12000, // 高考补习、特长培训
     others: 6000,           // 各种费用增加
   },
@@ -105,8 +106,16 @@ function calculateCostBreakdown(data: CalculatorFormData): CostBreakdown {
     education = education * educationMultiplier
   }
 
-  // 医疗费用（受城市等级和医疗水平影响）
-  const healthcare = baseCosts.healthcare * cityMultiplier * healthcareMultiplier
+  // 计算疫苗费用
+  const ageMonths = data.childAge * 12
+  const includeOptionalVaccines = data.monthlyIncome >= 30000 // 月收入3万以上考虑可选疫苗
+  const vaccineCosts = calculateVaccineCosts(ageMonths, includeOptionalVaccines)
+  
+  // 基础医疗费用（体检、常见病治疗等）
+  const baseHealthcare = baseCosts.healthcare * cityMultiplier * healthcareMultiplier
+  
+  // 医疗费用 = 基础医疗费用 + 疫苗费用
+  const healthcare = baseHealthcare + vaccineCosts.totalCost
 
   // 课外活动费用（可选，受城市等级影响，0-1岁基本无课外活动）
   let extracurricular = 0
@@ -125,6 +134,12 @@ function calculateCostBreakdown(data: CalculatorFormData): CostBreakdown {
     basicLiving: Math.round(basicLiving),
     education: Math.round(education),
     healthcare: Math.round(healthcare),
+    vaccineCosts: {
+      free: 0,
+      paid: vaccineCosts.breakdown.paid,
+      optional: vaccineCosts.breakdown.optional,
+      total: vaccineCosts.totalCost
+    },
     extracurricular: Math.round(extracurricular),
     others: Math.round(others),
   }
@@ -190,6 +205,11 @@ function generateRecommendations(data: CalculatorFormData, breakdown: CostBreakd
     recommendations.push('高中期间面临升学压力，教育投入达到峰值。医疗费用相对稳定，主要关注心理健康。建议重点投入有效的学习资源，同时为大学费用做好储备。')
   }
 
+  // 疫苗相关建议
+  const familyIncome = data.monthlyIncome < 15000 ? 'low' : data.monthlyIncome < 30000 ? 'medium' : 'high'
+  const vaccineRecommendations = getVaccineRecommendations(ageMonths, familyIncome)
+  recommendations.push(...vaccineRecommendations)
+
   // 医疗费用相关建议
   if (data.healthcareLevel === 'premium') {
     recommendations.push('选择高端医疗服务可以获得更好的就医体验，但基础医疗已能满足大部分需求。建议根据家庭经济状况合理选择。')
@@ -208,7 +228,8 @@ export function calculateChildRaisingCost(data: CalculatorFormData): Calculation
   const breakdown = calculateCostBreakdown(data)
   
   // 计算总费用
-  const totalAnnualCost = Object.values(breakdown).reduce((sum, cost) => sum + cost, 0)
+  const totalAnnualCost = breakdown.basicLiving + breakdown.education + breakdown.healthcare + 
+                         breakdown.vaccineCosts.total + breakdown.extracurricular + breakdown.others
   const monthlyAverageCost = Math.round(totalAnnualCost / 12)
   
   // 生成建议
@@ -228,12 +249,14 @@ export function calculateChildRaisingCost(data: CalculatorFormData): Calculation
  * 获取费用占比
  */
 export function getCostPercentages(breakdown: CostBreakdown): Record<keyof CostBreakdown, number> {
-  const total = Object.values(breakdown).reduce((sum, cost) => sum + cost, 0)
+  const total = breakdown.basicLiving + breakdown.education + breakdown.healthcare + 
+                breakdown.vaccineCosts.total + breakdown.extracurricular + breakdown.others
   
   return {
     basicLiving: Math.round((breakdown.basicLiving / total) * 100),
     education: Math.round((breakdown.education / total) * 100),
     healthcare: Math.round((breakdown.healthcare / total) * 100),
+    vaccineCosts: Math.round((breakdown.vaccineCosts.total / total) * 100),
     extracurricular: Math.round((breakdown.extracurricular / total) * 100),
     others: Math.round((breakdown.others / total) * 100),
   }

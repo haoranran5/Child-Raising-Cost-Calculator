@@ -70,6 +70,18 @@ export interface UserInput {
 
 // ==================== 计算结果类型 ====================
 
+/** 疫苗费用分解 */
+export interface VaccineCostBreakdown {
+  /** 免费疫苗 */
+  free: number
+  /** 自费疫苗 */
+  paid: number
+  /** 可选疫苗 */
+  optional: number
+  /** 总疫苗费用 */
+  total: number
+}
+
 /** 费用分解 */
 export interface CostBreakdown {
   /** 基础生活费 */
@@ -78,6 +90,8 @@ export interface CostBreakdown {
   education: number
   /** 医疗费用 */
   healthcare: number
+  /** 疫苗费用 */
+  vaccineCosts: VaccineCostBreakdown
   /** 课外活动费用 */
   extracurricular: number
   /** 其他费用 */
