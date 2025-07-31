@@ -206,6 +206,7 @@ function generateRecommendations(data: CalculatorFormData, breakdown: CostBreakd
   }
 
   // 疫苗相关建议
+  const ageMonths = data.childAge * 12
   const familyIncome = data.monthlyIncome < 15000 ? 'low' : data.monthlyIncome < 30000 ? 'medium' : 'high'
   const vaccineRecommendations = getVaccineRecommendations(ageMonths, familyIncome)
   recommendations.push(...vaccineRecommendations)

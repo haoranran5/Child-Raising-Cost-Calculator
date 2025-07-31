@@ -8,13 +8,16 @@ import {
   Calendar,
   Lightbulb,
   Download,
-  Share2
+  Share2,
+  Syringe
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { CalculationResult } from '@/types'
 import { formatCurrency, formatNumber } from '@/lib/utils'
 import { getCostPercentages } from '@/lib/calculator'
+import { VaccineDetails } from './vaccine-details'
+import { useState } from 'react'
 
 interface ResultDisplayProps {
   result: CalculationResult
@@ -22,6 +25,7 @@ interface ResultDisplayProps {
 
 export function ResultDisplay({ result }: ResultDisplayProps) {
   const percentages = getCostPercentages(result.breakdown)
+  const [showVaccineDetails, setShowVaccineDetails] = useState(false)
 
   // 根据孩子年龄生成更贴合实际的费用说明
   const getAgeSpecificDescription = (category: string, age: number) => {
@@ -215,6 +219,26 @@ export function ResultDisplay({ result }: ResultDisplayProps) {
                   </div>
                 </motion.div>
               ))}
+              
+              {/* 疫苗详情按钮 */}
+              {result.breakdown.vaccineCosts.total > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.6, delay: 0.3 + costItems.length * 0.1 }}
+                  className="flex justify-center pt-2"
+                >
+                  <Button
+                    onClick={() => setShowVaccineDetails(!showVaccineDetails)}
+                    variant="outline"
+                    size="sm"
+                    className="flex items-center gap-2"
+                  >
+                    <Syringe className="w-4 h-4" />
+                    {showVaccineDetails ? '隐藏疫苗详情' : '查看疫苗详情'}
+                  </Button>
+                </motion.div>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -315,6 +339,20 @@ export function ResultDisplay({ result }: ResultDisplayProps) {
           </CardContent>
         </Card>
       </motion.div>
+
+      {/* 疫苗详情 */}
+      {showVaccineDetails && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          <VaccineDetails 
+            childAge={result.userInput.childAge}
+            monthlyIncome={result.userInput.monthlyIncome}
+          />
+        </motion.div>
+      )}
     </div>
   )
 }
