@@ -3,7 +3,7 @@
  * 用于性能监控和分析
  */
 
-module.exports = {
+export default {
   ci: {
     collect: {
       url: [
